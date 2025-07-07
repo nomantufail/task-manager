@@ -1,0 +1,26 @@
+# Use official Node LTS image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Copy service account credentials
+COPY serviceAccountKey.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy project files
+COPY . .
+
+# Build TypeScript project
+RUN npm run build
+
+# Expose desired port (adjust if different)
+EXPOSE 7800
+
+# Default command to run your backend
+CMD ["node", "dist/index.js"]
