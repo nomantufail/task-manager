@@ -1,40 +1,34 @@
-interface Task {
-  id: number
+import api from '@/utils/api'  // Adjust path based on your project structure
+
+export interface Task {
+  id: string
   title: string
   description?: string
   status: 'pending' | 'completed'
   dueDate?: string
 }
 
-const tasks: Task[] = [
-  { id: 1, title: 'Sample Task', description: 'This is a mock task', status: 'pending', dueDate: '2024-07-10' },
-]
-
 export function getTasks(): Promise<Task[]> {
-  return new Promise(resolve => {
-    setTimeout(() => resolve([...tasks]), 500)
-  })
+  return api.get<Task[]>('/tasks').then(res => res.data)
 }
 
-export function getTaskById(id: number): Promise<Task | undefined> {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(tasks.find(t => t.id === id)), 300)
-  })
+export function getTaskById(id: string): Promise<Task> {
+  return api.get<Task>(`/tasks/${id}`).then(res => res.data)
 }
 
-export function addTask(taskData: Omit<Task, 'id'>): Promise<void> {
-  return new Promise(resolve => {
-    tasks.push({ id: Date.now(), ...taskData })
-    resolve()
-  })
+export function addTask(taskData: Omit<Task, 'id'>): Promise<Task> {
+  return api.post<Task>('/tasks', taskData).then(res => res.data)
 }
 
-export function updateTask(id: number, taskData: Omit<Task, 'id'>): Promise<void> {
-  return new Promise(resolve => {
-    const index = tasks.findIndex(t => t.id === id)
-    if (index > -1) {
-      tasks[index] = { id, ...taskData }
-    }
-    resolve()
-  })
+export function updateTask(id: string, taskData: Omit<Task, 'id'>): Promise<Task> {
+  return api.put<Task>(`/tasks/${id}`, taskData).then(res => res.data)
+}
+
+export function changeTaskStatus(task: Task): Promise<Task> {
+  return api.put<Task>(`/tasks/${task.id}`, { ...task, status: task.status == 'completed' ? 'pending' : 'completed' })
+    .then(res => res.data)
+}
+
+export function deleteTask(id: string): Promise<void> {
+  return api.delete(`/tasks/${id}`).then(() => {})
 }

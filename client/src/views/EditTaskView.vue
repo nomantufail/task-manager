@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TaskForm from '@/components/TaskForm.vue'
-import { useTaskStore, Task } from '@/stores/taskStore'
+import { useTaskStore } from '@/stores/taskStore'
+import type { Task } from '@/services/taskService.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,8 +12,7 @@ const taskStore = useTaskStore()
 const taskToEdit = ref<Task | null>(null)
 
 onMounted(async () => {
-  const id = Number(route.params.id)
-  const task = await taskStore.getTask(id)
+  const task = await taskStore.getTask(route.params.id as string)
   if (task) {
     taskToEdit.value = task
   } else {
@@ -26,11 +26,18 @@ async function handleSave(taskData: Omit<Task, 'id'>) {
     router.push('/')
   }
 }
+
+function goBack() {
+  router.push('/')
+}
 </script>
 
 <template>
   <div class="container mt-4">
-    <h2 class="mb-4">Edit Task</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Update Task</h2>
+      <button class="btn btn-outline-secondary" @click="goBack">← Back to List</button>
+    </div>
     <TaskForm v-if="taskToEdit" :taskToEdit="taskToEdit" @save="handleSave" />
     <div v-else>Loading...</div>
   </div>

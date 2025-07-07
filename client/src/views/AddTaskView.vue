@@ -10,11 +10,19 @@ async function handleSave(taskData: { title: string; description?: string; statu
   await taskStore.addNewTask(taskData)
   router.push('/')
 }
+
+function goBack() {
+  router.push('/')
+}
 </script>
 
 <template>
   <div class="container mt-4">
-    <h2 class="mb-4">Add New Task</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Add New Task</h2>
+      <button class="btn btn-outline-secondary" @click="goBack">← Back to List</button>
+    </div>
+
     <TaskForm :taskToEdit="null" @save="handleSave" />
   </div>
 </template>
